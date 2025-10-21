@@ -21,8 +21,9 @@ app.use(express.json());
 
 main().catch(err => console.error("MongoDB connection error:", err));
 async function main() {
-    await mongoose.connect(MONGO_URI);
-    console.log("✅ Connected to MongoDB Atlas (shubdb)");
+    await mongoose.connect(MONGO_URI)
+        .then(() => console.log("✅ Connected to MongoDB Atlas"))
+        .catch(err => console.error("❌ MongoDB connection failed:", err));
 }
 
 
