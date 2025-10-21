@@ -385,8 +385,13 @@ app.get("/posts/tags", async (req, res) => {
 
 
 app.get("/roadmaps", async (_req, res) => {
-    const items = await Roadmap.find({}).sort({ createdAt: -1 });
-    res.json(items);
+    try {
+        const items = await Roadmap.find({}).sort({ createdAt: -1 });
+        res.json(items);
+    } catch (err) {
+        console.error("❌ Roadmaps error:", err.message);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
 });
 
 app.post("/roadmaps", requireAuth, requireAdmin, async (req, res) => {
