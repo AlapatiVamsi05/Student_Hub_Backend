@@ -10,18 +10,10 @@ const JWT_SECRET = process.env.JWT_SECRET || "Shub9GSBPR";
 const MONGO_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 3030;
 
-const allowedOrigins = [
-    "http://localhost:5173",
-    "https://student-hub-frontend1.vercel.app"
-];
-
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin)) return callback(null, true);
-        return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.urlencoded({ extended: true }));
