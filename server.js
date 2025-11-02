@@ -22,8 +22,8 @@ app.use(express.json());
 main().catch(err => console.error("MongoDB connection error:", err));
 async function main() {
     await mongoose.connect(MONGO_URI)
-        .then(() => console.log("✅ Connected to MongoDB Atlas"))
-        .catch(err => console.error("❌ MongoDB connection failed:", err));
+        .then(() => console.log("Connected to MongoDB Atlas"))
+        .catch(err => console.error("MongoDB connection failed:", err));
 }
 
 
@@ -94,11 +94,20 @@ const modLogSchema = new Schema(
     { timestamps: true }
 );
 
+const requestSchema = new Schema(
+    {
+        email: { type: String, required: true },
+        message: { type: String, required: true },
+    },
+    { timestamps: true }
+);
+
 const User = mongoose.model("User", userSchema);
 const Post = mongoose.model("Post", postSchema);
 const Roadmap = mongoose.model("Roadmap", roadmapSchema);
 const Repo = mongoose.model("Repo", repoSchema);
 const ModLog = mongoose.model("ModLog", modLogSchema);
+const Request = mongoose.model("Request", requestSchema);
 
 function requireAuth(req, res, next) {
     try {
@@ -395,7 +404,7 @@ app.get("/roadmaps", async (_req, res) => {
         const items = await Roadmap.find({}).sort({ createdAt: -1 });
         res.json(items);
     } catch (err) {
-        console.error("❌ Roadmaps error:", err.message);
+        console.error("Roadmaps error:", err.message);
         res.status(500).json({ message: "Server error", error: err.message });
     }
 });
@@ -458,6 +467,22 @@ app.delete("/repos/:id", requireAuth, requireAdmin, async (req, res) => {
     await Repo.findByIdAndDelete(id);
     res.json({ message: "Repo deleted" });
 });
+
+// POST /requests
+app.post("/requests", async (req, res) => {
+    try {
+        const { email, message } = req.body;
+        if (!email || !message)
+            return res.status(400).json({ message: "Email and message are required" });
+
+        const doc = await Request.create({ email, message });
+        res.json({ message: "Request submitted successfully", request: doc });
+    } catch (err) {
+        console.error("Request submission error:", err.message);
+        res.status(500).json({ message: "Server error while saving request" });
+    }
+});
+
 
 app.get("/", (_req, res) => res.send("StudentHub backend working"));
 
