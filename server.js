@@ -313,7 +313,7 @@ app.delete("/posts/:id/save", requireAuth, async (req, res) => {
     res.json({ message: "Unsaved", savedPosts: user.savedPosts });
 });
 
-app.post("/posts/:id/comments", optionalAuth, async (req, res) => {
+app.post("/posts/:id/comments", requireAuth, async (req, res) => {
     const { id } = req.params;
     const { content, anonymous = false } = req.body;
     if (!content) return res.status(400).json({ message: "content is required" });
@@ -468,7 +468,6 @@ app.delete("/repos/:id", requireAuth, requireAdmin, async (req, res) => {
     res.json({ message: "Repo deleted" });
 });
 
-// POST /requests
 app.post("/requests", async (req, res) => {
     try {
         const { email, message } = req.body;
