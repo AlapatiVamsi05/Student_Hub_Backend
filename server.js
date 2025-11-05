@@ -215,7 +215,7 @@ app.post("/posts", optionalAuth, async (req, res) => {
 });
 
 app.get("/posts", async (_req, res) => {
-    const posts = await Post.find({}).sort({ createdAt: -1 }).lean();
+    const posts = await Post.find({}).populate("author", "username").sort({ createdAt: -1 }).lean();
     res.json(
         posts.map(p => ({
             ...p,
